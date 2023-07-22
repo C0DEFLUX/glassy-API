@@ -14,8 +14,8 @@ class UserController extends Controller
 
         //Init data
         $data = [
-            'user' => $user = $request->input('username'),
-            'pass' => $pass = $request->input('password'),
+            'user' => $request->input('username'),
+            'pass' => $request->input('password'),
             'userErr' => '',
             'passErr' => '',
         ];
@@ -43,8 +43,10 @@ class UserController extends Controller
         if(empty($data['userErr']) && empty($data['passErr'])) {
 
             return response()->json([
+                'userErr' => '',
+                'passErr' => '',
                 'token' => $user['token'],
-                'success' => true
+                'status' => 200
             ]);
 
         }
@@ -53,7 +55,26 @@ class UserController extends Controller
         return response()->json([
             'userErr' => $data['userErr'],
             'passErr' => $data['passErr'],
-            'success' => false
+            'status' => 403
+        ]);
+
+    }
+
+    function routerAuth(Request $request) {
+
+        //Math the localStorage token to db token
+        $token = User::where('token', $request->token)->first();
+
+        //If it returns true, send response auth as true
+        if($token) {
+            return response()->json([
+                'status' => 200
+            ]);
+        }
+
+        //If it doesn't match, send response auth as false
+        return response()->json([
+            'status' => 403
         ]);
 
     }
