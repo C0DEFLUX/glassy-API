@@ -58,7 +58,6 @@ class ProductController extends Controller
                     return response()->json([
                         'success_msg' => 'Bilde vieksmīgi augšupielādēts!',
                         'status' => 200,
-                        'image' => $imgUrl
                     ]);
                 }
             }

@@ -60,22 +60,9 @@ class UserController extends Controller
 
     }
 
-    function routerAuth(Request $request) {
+    function userVerify(Request $request) {
 
-        //Math the localStorage token to db token
-        $token = User::where('token', $request->token)->first();
-
-        //If it returns true, send response auth as true
-        if($token) {
-            return response()->json([
-                'status' => 200
-            ]);
-        }
-
-        //If it doesn't match, send response auth as false
-        return response()->json([
-            'status' => 403
-        ]);
+        return response()->json(['status' => '200', 'user' => $request->authenticatedUser]);
 
     }
 

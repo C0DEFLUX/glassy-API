@@ -20,10 +20,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::middleware('VerifyUserToken')->get('/verify-user', [UserController::class, 'userVerify']);
+
 //Login
 Route::post('login', [UserController::class, 'login']);
 //Route auth
-Route::post('router-auth', [UserController::class, 'routerAuth']);
 //Image upload
 Route::post('image-upload', [ProductController::class, 'addProduct']);
 
