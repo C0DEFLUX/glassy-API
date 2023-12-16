@@ -13,4 +13,9 @@ class Product extends Model
         'product_title',
         'main_img'
     ];
+
+    protected $casts = [
+        'created_at' => 'datetime:d/m/Y',
+        'updated_at' => 'datetime:d/m/Y',
+    ];
 }

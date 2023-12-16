@@ -18,4 +18,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::any('/register', [UserController::class, 'register']);
+//Route::any('/register', [UserController::class, 'register']);

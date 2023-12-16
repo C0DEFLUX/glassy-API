@@ -4,9 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
+
 {
+    function index() {
+
+        $data = Product::all();
+
+        return response()->json($data);
+
+    }
 
     function addProduct (Request $request) {
 
@@ -48,7 +57,8 @@ class ProductController extends Controller
                 if(Product::create($data_clean)) {
                     return response()->json([
                         'success_msg' => 'Bilde vieksmīgi augšupielādēts!',
-                        'status' => 200
+                        'status' => 200,
+                        'image' => $imgUrl
                     ]);
                 }
             }
@@ -59,6 +69,24 @@ class ProductController extends Controller
                 'imgErr' => 'Ievietojiet bildi!'
             ]);
         }
+
+    }
+
+    function removeProduct($id)
+    {
+        //Find product by id
+        $product = Product::find($id);
+        //Make Absolute URL from db into a usable URL
+        $product_url = str_replace(asset('storage/'), 'public', $product->main_img);
+        //Delete image from storage
+        unlink(Storage::path($product_url));
+        //Delete book info from db
+        $product->delete();
+
+        return response()->json([
+            'message' => 'Produkts noņemts veiksmīgi!',
+            'code' => 200,
+        ]);
 
     }
 }

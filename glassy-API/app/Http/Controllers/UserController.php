@@ -81,7 +81,7 @@ class UserController extends Controller
 
     function register () {
         $data = [
-            'username' => 'Marija',
+            'username' => 'Admin',
             'password' => '$2y$10$Y4nEXtcAMFQXeDZnIgAs2.sRI.Pu0Z0fVOiTSyc.oXTr8A3QChe6S',
             'token' => 'j7hYinIDjvT0EcnAnSelibk5n1WLvyQhxIWhgXffb3sVUxDyVbTSuUDVsPB4'
         ];

@@ -26,3 +26,7 @@ Route::post('login', [UserController::class, 'login']);
 Route::post('router-auth', [UserController::class, 'routerAuth']);
 //Image upload
 Route::post('image-upload', [ProductController::class, 'addProduct']);
+
+Route::get('product-data', [ProductController::class, 'index']);
+
+Route::delete('delete-product/{id}', [ProductController::class, 'removeProduct']);
