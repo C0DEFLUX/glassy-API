@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
+
 
 class ProductController extends Controller
 
@@ -17,61 +21,65 @@ class ProductController extends Controller
 
     }
 
-    function addProduct (Request $request) {
+    public static function addProduct (): JsonResponse
+    {
 
-        $data = [
-            'prodTitleErr' => '',
-        ];
+        $validation = Validator::make(request()->all(), [
+            'product_title' => 'required|unique:products,product_title|string|max:50|min:5',
+            'product_desc' => 'required|string|max:1000|min:10',
+            'image' => 'required|image|mimes:jpeg,png,jpg'
+        ],
+        [
+            'product_title.required' => "Produkta nosaukums ir obligāts!",
+            'product_title.unique' => "Produkta nosaukums nedrīkst atkārtoties!",
+            'product_title.string' => "Produkta nosaukmam jābūt tekstam!",
+            'product_title.max' => "Produkta nosaukums nedrīkst pārsniegt 50 rakstu zīmes!",
+            'product_title.min' => "Produkta nosaukums nedrīkst būt īsāks par 5 rakstu zīmēm!",
 
-        if($request->hasFile('image')) {
+            'product_desc.required' => "Produkta apraksts ir obligāts!",
+            'product_desc.string' => "Produkta aprakstam jābūt tekstam!",
+            'product_desc.max' => "Produkta apraksts nedrīkst pārsniegt 1000 rakstu zīmes!",
+            'product_desc.min' => "Produkta apraksts nedrīkst būt īsāks par 10 rakstu zīmēm!",
 
-            $product_title = $request->input('product_title');
+            'image.required' => 'Produkta titula bilde ir obligāta!',
+            'image.image' => 'Produkta titula bildei ir jābūt bildei!',
+            'image.mimes' => 'Produkta titula bilde tikai var būt JPEG, PNG, JPG!'
 
-            //Check if title is empty
-            if(empty($product_title)) {
-                return response()->json([
-                    'prodTitleErr' => 'Ievadiet produkta nosaukumu!',
-                ]);
-            }
+        ]);
 
-            if(empty($data['prodTitleErr'])) {
-                //Get the image file
-                $file = $request->file('image');
-                //Get the original image name
-                $filename = $file->getClientOriginalName();
-                //Add current time to image to make sure image names never match
-                $finalName = date('His') . $filename;
-
-                //Get path of image
-                $path = $request->file('image')->storeAs('images', $finalName,'public');
-
-                //Get the full path of image to store in db
-                $imgUrl = asset('storage/'. $path);
-
-                //Make clean data to store in the db
-                $data_clean = [
-                    'product_title' => $product_title,
-                    'main_img' => $imgUrl
-                ];
-
-                if(Product::create($data_clean)) {
-                    return response()->json([
-                        'success_msg' => 'Bilde vieksmīgi augšupielādēts!',
-                        'status' => 200,
-                    ]);
-                }
-            }
-
-        }else {
-
+        if($validation->fails()) {
             return response()->json([
-                'imgErr' => 'Ievietojiet bildi!'
-            ]);
+                'status' => 422,
+                'message' => "Neizdevās ieveitot produktu!",
+                'errors' => $validation->errors()
+            ], 422);
         }
 
+        //Get the image file
+        $file = request()->file('image');
+        //Get the original image name
+        $filename = $file->getClientOriginalName();
+        //Add current time to image to make sure image names never match
+        $final_name = date('His') . $filename;
+        //Get path of image
+        $path = request()->file('image')->storeAs('images', $final_name, 'public');
+        //Get the full path of image to store in db
+        $img_url = asset('storage/' . $path);
+
+        //Create data
+        Product::create([
+            'product_title' => request('product_title'),
+            'product_desc' => request('product_desc'),
+            'main_img' => $img_url
+        ]);
+
+        return response()->json([
+            'success_msg' => 'Produkts vieksmīgi augšupielādēts!',
+            'status' => 201,
+        ], 201);
     }
 
-    function removeProduct($id)
+    public static function removeProduct($id)
     {
         //Find product by id
         $product = Product::find($id);

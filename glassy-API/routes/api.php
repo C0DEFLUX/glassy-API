@@ -24,9 +24,9 @@ Route::middleware('VerifyUserToken')->get('/verify-user', [UserController::class
 
 //Login
 Route::post('login', [UserController::class, 'login']);
-//Route auth
+
 //Image upload
-Route::post('image-upload', [ProductController::class, 'addProduct']);
+Route::post('add-product', [ProductController::class, 'addProduct']);
 
 Route::get('product-data', [ProductController::class, 'index']);
 
