@@ -26,8 +26,12 @@ Route::middleware('VerifyUserToken')->get('/verify-user', [UserController::class
 Route::post('login', [UserController::class, 'login']);
 
 //Image upload
-Route::post('add-product', [ProductController::class, 'addProduct']);
+Route::post('add-product', [ProductController::class, 'create']);
+
+Route::post('edit-product/{name}', [ProductController::class, 'update']);
 
 Route::get('product-data', [ProductController::class, 'index']);
 
-Route::delete('delete-product/{id}', [ProductController::class, 'removeProduct']);
+Route::delete('delete-product/{id}', [ProductController::class, 'destroy']);
+
+Route::get('product-by-name/{name}', [ProductController::class, 'getByName']);
