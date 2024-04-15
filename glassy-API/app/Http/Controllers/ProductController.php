@@ -11,9 +11,9 @@ use Illuminate\Validation\ValidationException;
 
 
 class ProductController extends Controller
-
 {
-    function index() {
+    function index()
+    {
 
         $data = Product::all();
 
@@ -101,7 +101,6 @@ class ProductController extends Controller
             'image.required' => 'Produkta titula bilde ir obligāta!',
             'image.image' => 'Produkta titula bildei ir jābūt bildei!',
             'image.mimes' => 'Produkta titula bilde tikai var būt JPEG, PNG, JPG!'
-
         ]);
 
         if($validation->fails()) {

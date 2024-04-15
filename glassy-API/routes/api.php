@@ -25,6 +25,8 @@ Route::middleware('VerifyUserToken')->get('/verify-user', [UserController::class
 //Login
 Route::post('login', [UserController::class, 'login']);
 
+//Route::get('register', [UserController::class, 'register']);
+
 //Image upload
 Route::post('add-product', [ProductController::class, 'create']);
 
