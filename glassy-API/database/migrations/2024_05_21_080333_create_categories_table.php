@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('category_name_lv')->nullable();
             $table->string('category_name_eng')->nullable();
             $table->string('category_name_ru')->nullable();
+            $table->string('created_at')->nullable();
+            $table->string('updated_at')->nullable();
 
         });
     }
