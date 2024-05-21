@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -27,7 +28,12 @@ Route::post('login', [UserController::class, 'login']);
 
 Route::get('register', [UserController::class, 'register']);
 
-//Image upload
+//Categories
+Route::get('category-data', [CategoryController::class, 'index']);
+
+Route::post('add-category', [CategoryController::class, 'create']);
+
+//Products
 Route::post('add-product', [ProductController::class, 'create']);
 
 Route::post('edit-product/{name}', [ProductController::class, 'update']);

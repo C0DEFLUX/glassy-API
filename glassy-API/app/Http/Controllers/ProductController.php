@@ -14,16 +14,13 @@ class ProductController extends Controller
 {
     function index()
     {
-
         $data = Product::all();
 
         return response()->json($data);
-
     }
 
     public static function create (): JsonResponse
     {
-
         $validation = Validator::make(request()->all(), [
             'product_title' => 'required|unique:products,product_title|string|max:50|min:5',
             'product_desc' => 'required|string|max:1000|min:10',
@@ -81,7 +78,6 @@ class ProductController extends Controller
 
     public static function update ($name): JsonResponse
     {
-
         $validation = Validator::make(request()->all(), [
             'product_title' => 'required|string|max:50|min:5',
             'product_desc' => 'required|string|max:1000|min:10',
@@ -162,14 +158,12 @@ class ProductController extends Controller
             'message' => 'Produkts noņemts veiksmīgi!',
             'status' => 200,
         ]);
-
     }
 
-    function getByName($name) {
-
+    function getByName($name)
+    {
         $data = Product::where('product_title', $name)->first();
 
         return response()->json($data);
-
     }
 }
