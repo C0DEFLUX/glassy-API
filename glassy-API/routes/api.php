@@ -33,6 +33,8 @@ Route::get('category-data', [CategoryController::class, 'index']);
 
 Route::post('add-category', [CategoryController::class, 'create']);
 
+Route::post('edit-category/{id}', [CategoryController::class, 'update']);
+
 //Products
 Route::post('add-product', [ProductController::class, 'create']);
 

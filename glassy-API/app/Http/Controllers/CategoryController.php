@@ -63,7 +63,7 @@ class CategoryController extends Controller
         ],201);
     }
 
-    public static function update()
+    public static function update($id)
     {
         $validation = Validator::make(request()->all(), [
             'category_name_lv' => 'required|unique:categories,category_name_lv|string|max:50|min:3',
@@ -98,5 +98,16 @@ class CategoryController extends Controller
                 'errors' => $validation->errors()
             ], 422);
         }
+
+        Category::where('id', $id)->update([
+            'category_name_lv' => request('category_name_lv'),
+            'category_name_eng' => request('category_name_eng'),
+            'category_name_ru' => request('category_name_ru'),
+        ]);
+
+        return response()->json([
+            'status' => 201,
+            'success_msg' => 'Kategorija atjaunota veiksmīgi!'
+        ], 201);
     }
 }
