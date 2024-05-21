@@ -3,19 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
-    public static function index()
+    public static function index(): JsonResponse
     {
         $data = Category::all();
 
         return response()->json($data);
     }
 
-    public static function create()
+    public static function create(): JsonResponse
     {
         $validation = Validator::make(request()->all(), [
             'category_name_lv' => 'required|unique:categories,category_name_lv|string|max:50|min:3',
@@ -63,7 +64,7 @@ class CategoryController extends Controller
         ],201);
     }
 
-    public static function update($id)
+    public static function update($id): JsonResponse
     {
         $validation = Validator::make(request()->all(), [
             'category_name_lv' => 'required|unique:categories,category_name_lv|string|max:50|min:3',
@@ -109,5 +110,17 @@ class CategoryController extends Controller
             'status' => 201,
             'success_msg' => 'Kategorija atjaunota veiksmīgi!'
         ], 201);
+    }
+
+    public static function destroy($id): JsonResponse
+    {
+        $category = Category::find($id);
+
+        $category->delete();
+
+        return response()->json([
+            'message' => 'Kategorija noņemnta veiksmīgi!',
+            'status' => 200,
+        ], 200);
     }
 }

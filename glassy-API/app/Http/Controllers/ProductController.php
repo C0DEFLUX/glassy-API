@@ -157,7 +157,7 @@ class ProductController extends Controller
         return response()->json([
             'message' => 'Produkts noņemts veiksmīgi!',
             'status' => 200,
-        ]);
+        ], 200);
     }
 
     function getByName($name)
