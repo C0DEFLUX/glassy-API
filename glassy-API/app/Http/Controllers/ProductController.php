@@ -22,21 +22,50 @@ class ProductController extends Controller
     public static function create (): JsonResponse
     {
         $validation = Validator::make(request()->all(), [
-            'product_title' => 'required|unique:products,product_title|string|max:50|min:5',
-            'product_desc' => 'required|string|max:1000|min:10',
+            'product_title_lv' => 'required|unique:products,product_title_lv|string|max:50|min:5',
+            'product_title_eng' => 'required|unique:products,product_title_eng|string|max:50|min:5',
+            'product_title_ru' => 'required|unique:products,product_title_ru|string|max:50|min:5',
+            'product_desc_lv' => 'required|string|max:1000|min:10',
+            'product_desc_eng' => 'required|string|max:1000|min:10',
+            'product_desc_ru' => 'required|string|max:1000|min:10',
+            'category_id' => 'required',
             'image' => 'required|image|mimes:jpeg,png,jpg'
         ],
         [
-            'product_title.required' => "Produkta nosaukums ir obligāts!",
-            'product_title.unique' => "Produkta nosaukums nedrīkst atkārtoties!",
-            'product_title.string' => "Produkta nosaukmam jābūt tekstam!",
-            'product_title.max' => "Produkta nosaukums nedrīkst pārsniegt 50 rakstu zīmes!",
-            'product_title.min' => "Produkta nosaukums nedrīkst būt īsāks par 5 rakstu zīmēm!",
+            'product_title_lv.required' => "Produkta nosaukums ir obligāts!",
+            'product_title_lv.unique' => "Produkta nosaukums nedrīkst atkārtoties!",
+            'product_title_lv.string' => "Produkta nosaukmam jābūt tekstam!",
+            'product_title_lv.max' => "Produkta nosaukums nedrīkst pārsniegt 50 rakstu zīmes!",
+            'product_title_lv.min' => "Produkta nosaukums nedrīkst būt īsāks par 5 rakstu zīmēm!",
 
-            'product_desc.required' => "Produkta apraksts ir obligāts!",
-            'product_desc.string' => "Produkta aprakstam jābūt tekstam!",
-            'product_desc.max' => "Produkta apraksts nedrīkst pārsniegt 1000 rakstu zīmes!",
-            'product_desc.min' => "Produkta apraksts nedrīkst būt īsāks par 10 rakstu zīmēm!",
+            'product_title_eng.required' => "Produkta nosaukums ir obligāts!",
+            'product_title_eng.unique' => "Produkta nosaukums nedrīkst atkārtoties!",
+            'product_title_eng.string' => "Produkta nosaukmam jābūt tekstam!",
+            'product_title_eng.max' => "Produkta nosaukums nedrīkst pārsniegt 50 rakstu zīmes!",
+            'product_title_eng.min' => "Produkta nosaukums nedrīkst būt īsāks par 5 rakstu zīmēm!",
+
+            'product_title_ru.required' => "Produkta nosaukums ir obligāts!",
+            'product_title_ru.unique' => "Produkta nosaukums nedrīkst atkārtoties!",
+            'product_title_ru.string' => "Produkta nosaukmam jābūt tekstam!",
+            'product_title_ru.max' => "Produkta nosaukums nedrīkst pārsniegt 50 rakstu zīmes!",
+            'product_title_ru.min' => "Produkta nosaukums nedrīkst būt īsāks par 5 rakstu zīmēm!",
+
+            'product_desc_lv.required' => "Produkta apraksts ir obligāts!",
+            'product_desc_lv.string' => "Produkta aprakstam jābūt tekstam!",
+            'product_desc_lv.max' => "Produkta apraksts nedrīkst pārsniegt 1000 rakstu zīmes!",
+            'product_desc_lv.min' => "Produkta apraksts nedrīkst būt īsāks par 10 rakstu zīmēm!",
+
+            'product_desc_eng.required' => "Produkta apraksts ir obligāts!",
+            'product_desc_eng.string' => "Produkta aprakstam jābūt tekstam!",
+            'product_desc_eng.max' => "Produkta apraksts nedrīkst pārsniegt 1000 rakstu zīmes!",
+            'product_desc_eng.min' => "Produkta apraksts nedrīkst būt īsāks par 10 rakstu zīmēm!",
+
+            'product_desc_ru.required' => "Produkta apraksts ir obligāts!",
+            'product_desc_ru.string' => "Produkta aprakstam jābūt tekstam!",
+            'product_desc_ru.max' => "Produkta apraksts nedrīkst pārsniegt 1000 rakstu zīmes!",
+            'product_desc_ru.min' => "Produkta apraksts nedrīkst būt īsāks par 10 rakstu zīmēm!",
+
+            'category_id.required' => 'Kategorija ir obligāta!',
 
             'image.required' => 'Produkta titula bilde ir obligāta!',
             'image.image' => 'Produkta titula bildei ir jābūt bildei!',
@@ -65,8 +94,13 @@ class ProductController extends Controller
 
         //Create data
         Product::create([
-            'product_title' => request('product_title'),
-            'product_desc' => request('product_desc'),
+            'product_title_lv' => request('product_title_lv'),
+            'product_title_eng' => request('product_title_eng'),
+            'product_title_ru' => request('product_title_ru'),
+            'product_desc_lv' => request('product_desc_lv'),
+            'product_desc_eng' => request('product_desc_eng'),
+            'product_desc_ru' => request('product_desc_ru'),
+            'category_id' => request('category_id'),
             'main_img' => $img_url
         ]);
 

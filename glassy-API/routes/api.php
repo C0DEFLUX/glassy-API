@@ -35,7 +35,7 @@ Route::post('add-category', [CategoryController::class, 'create']);
 
 Route::post('edit-category/{id}', [CategoryController::class, 'update']);
 
-Route::get('delete-category/{id}', [CategoryController::class, 'destroy']);
+Route::delete('delete-category/{id}', [CategoryController::class, 'destroy']);
 
 //Products
 Route::post('add-product', [ProductController::class, 'create']);

@@ -16,8 +16,13 @@ return new class extends Migration
             $table->collation = 'utf8_general_ci';
 
             $table->id();
-            $table->string('product_title')->nullable();
-            $table->text('product_desc')->nullable();
+            $table->string('product_title_lv')->nullable();
+            $table->text('product_title_eng')->nullable();
+            $table->text('product_title_ru')->nullable();
+            $table->text('product_desc_lv')->nullable();
+            $table->text('product_desc_eng')->nullable();
+            $table->text('product_desc_ru')->nullable();
+            $table->integer('category_id')->nullable();
             $table->text('main_img')->nullable();
             $table->string('created_at')->nullable();
             $table->string('updated_at')->nullable();
