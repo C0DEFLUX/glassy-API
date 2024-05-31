@@ -2,21 +2,57 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Gallery;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\DB;
 
 
 class ProductController extends Controller
 {
     function index()
     {
-        $data = Product::all();
+        //Select the categories
+        $products = DB::table('products')
+            ->join('categories', 'products.category_id', '=', 'categories.id')
+            ->select('products.*',
+                'categories.category_name_lv as category_lv',
+                'categories.category_name_eng as category_eng',
+                'categories.category_name_ru as category_ru'
+            )
+            ->get();
+
+        //Add the category array to product return
+        return $products->map(function($product) {
+            $product->category = [
+                'lv' => $product->category_lv,
+                'eng' => $product->category_eng,
+                'ru' => $product->category_ru
+            ];
+            unset($product->category_lv);
+            unset($product->category_eng);
+            unset($product->category_ru);
+
+            //Select and add the gallery img to product return
+            $galleryImages = DB::table('galleries')
+                ->where('product_id', $product->id)
+                ->pluck('img_url');
+            $product->gallery = $galleryImages;
+
+            return $product;
+        });
+    }
+
+    function galleryIndex(): JsonResponse
+    {
+        $data = Gallery::all();
 
         return response()->json($data);
+
     }
 
     public static function create (): JsonResponse
@@ -29,7 +65,9 @@ class ProductController extends Controller
             'product_desc_eng' => 'required|string|max:1000|min:10',
             'product_desc_ru' => 'required|string|max:1000|min:10',
             'category_id' => 'required',
-            'image' => 'required|image|mimes:jpeg,png,jpg'
+            'image' => 'required|image|mimes:jpeg,png,jpg',
+            'images.*' => 'image|mimes:jpeg,png,jpg'
+
         ],
         [
             'product_title_lv.required' => "Produkta nosaukums ir obligāts!",
@@ -69,7 +107,10 @@ class ProductController extends Controller
 
             'image.required' => 'Produkta titula bilde ir obligāta!',
             'image.image' => 'Produkta titula bildei ir jābūt bildei!',
-            'image.mimes' => 'Produkta titula bilde tikai var būt JPEG, PNG, JPG!'
+            'image.mimes' => 'Produkta titula bilde tikai var būt JPEG, PNG, JPG!',
+
+            'images.image' => 'Produkta papildus bildēm ir jābut bildēm!',
+            'images.mimes' => 'Produkta papildus bildes var būt JPEG, PNG, JPG!'
 
         ]);
 
@@ -92,8 +133,10 @@ class ProductController extends Controller
         //Get the full path of image to store in db
         $img_url = asset('storage/' . $path);
 
+
+
         //Create data
-        Product::create([
+        $product = Product::create([
             'product_title_lv' => request('product_title_lv'),
             'product_title_eng' => request('product_title_eng'),
             'product_title_ru' => request('product_title_ru'),
@@ -103,6 +146,33 @@ class ProductController extends Controller
             'category_id' => request('category_id'),
             'main_img' => $img_url
         ]);
+
+        $product_id = $product->id;
+
+
+
+        if (request()->hasFile('images')) {
+            foreach (request()->file('images') as $file) {
+                // Get the original image name
+                $filename = $file->getClientOriginalName();
+
+                // Add current time to image to make sure image names never match
+                $final_name = date('His') . $filename;
+
+                // Define the path to store the image
+                $path = 'images/' . $final_name;
+
+                Storage::disk('public')->putFileAs('images', $file, $final_name);
+
+                // Get the full path of the image to store in the database
+                $img_url = asset('storage/' . $path);
+
+                Gallery::create([
+                    'product_id' => $product_id,
+                    'img_url' => $img_url
+                ]);
+            }
+        }
 
         return response()->json([
             'success_msg' => 'Produkts vieksmīgi augšupielādēts!',

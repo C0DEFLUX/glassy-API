@@ -47,3 +47,5 @@ Route::get('product-data', [ProductController::class, 'index']);
 Route::delete('delete-product/{id}', [ProductController::class, 'destroy']);
 
 Route::get('product-by-name/{name}', [ProductController::class, 'getByName']);
+
+Route::get('gallery-data', [ProductController::class, 'galleryIndex']);
