@@ -48,11 +48,11 @@ class CategoryController extends Controller
             return response()->json([
                 'status' => 422,
                 'message' => 'Neizdevās pievienot kategoriju!',
-                'errors' => $validation->errors()
+                'errors' => $validation->errors(),
             ], 422);
         }
 
-        Category::create([
+        $product = Category::create([
             'category_name_lv' => request('category_name_lv'),
             'category_name_eng' => request('category_name_eng'),
             'category_name_ru' => request('category_name_ru'),
@@ -61,15 +61,16 @@ class CategoryController extends Controller
         return response()->json([
             'status' => 201,
             'success_msg' => 'Kategorija pievienota veiksmīgi!',
+            $product
         ],201);
     }
 
     public static function update($id): JsonResponse
     {
         $validation = Validator::make(request()->all(), [
-            'category_name_lv' => 'required|unique:categories,category_name_lv|string|max:50|min:3',
-            'category_name_eng' => 'required|unique:categories,category_name_eng|string|max:50|min:3',
-            'category_name_ru' => 'required|unique:categories,category_name_ru|string|max:50|min:3',
+            'category_name_lv' => 'required|unique:categories,category_name_lv, '. $id .'|string|max:50|min:3',
+            'category_name_eng' => 'required|unique:categories,category_name_eng, '. $id .'|string|max:50|min:3',
+            'category_name_ru' => 'required|unique:categories,category_name_ru, '. $id .'|string|max:50|min:3',
         ],
             [
                 //LV
@@ -106,9 +107,12 @@ class CategoryController extends Controller
             'category_name_ru' => request('category_name_ru'),
         ]);
 
+        $categories = Category::where('id', $id)->first();
+
         return response()->json([
             'status' => 201,
-            'success_msg' => 'Kategorija atjaunota veiksmīgi!'
+            'success_msg' => 'Kategorija atjaunota veiksmīgi!',
+            'data' => $categories
         ], 201);
     }
 

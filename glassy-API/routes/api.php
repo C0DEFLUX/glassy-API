@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\MarketingController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -40,7 +41,7 @@ Route::delete('delete-category/{id}', [CategoryController::class, 'destroy']);
 //Products
 Route::post('add-product', [ProductController::class, 'create']);
 
-Route::post('edit-product/{name}', [ProductController::class, 'update']);
+Route::post('edit-product/{id}', [ProductController::class, 'update']);
 
 Route::get('product-data', [ProductController::class, 'index']);
 
@@ -49,3 +50,8 @@ Route::delete('delete-product/{id}', [ProductController::class, 'destroy']);
 Route::get('product-by-name/{name}', [ProductController::class, 'getByName']);
 
 Route::get('gallery-data', [ProductController::class, 'galleryIndex']);
+
+//Marketing
+Route::get('title-image', [MarketingController::class, 'index']);
+
+Route::post('add-title-image', [MarketingController::class, 'create']);

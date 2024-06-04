@@ -133,8 +133,6 @@ class ProductController extends Controller
         //Get the full path of image to store in db
         $img_url = asset('storage/' . $path);
 
-
-
         //Create data
         $product = Product::create([
             'product_title_lv' => request('product_title_lv'),
@@ -148,8 +146,6 @@ class ProductController extends Controller
         ]);
 
         $product_id = $product->id;
-
-
 
         if (request()->hasFile('images')) {
             foreach (request()->file('images') as $file) {
@@ -180,30 +176,73 @@ class ProductController extends Controller
         ], 201);
     }
 
-    public static function update ($name): JsonResponse
+    public static function update($id): JsonResponse
     {
-        $validation = Validator::make(request()->all(), [
-            'product_title' => 'required|string|max:50|min:5',
-            'product_desc' => 'required|string|max:1000|min:10',
-        ],
-        [
-            'product_title.required' => "Produkta nosaukums ir obligāts!",
-            'product_title.unique' => "Produkta nosaukums nedrīkst atkārtoties!",
-            'product_title.string' => "Produkta nosaukmam jābūt tekstam!",
-            'product_title.max' => "Produkta nosaukums nedrīkst pārsniegt 50 rakstu zīmes!",
-            'product_title.min' => "Produkta nosaukums nedrīkst būt īsāks par 5 rakstu zīmēm!",
+        $product = Product::find($id);
 
-            'product_desc.required' => "Produkta apraksts ir obligāts!",
-            'product_desc.string' => "Produkta aprakstam jābūt tekstam!",
-            'product_desc.max' => "Produkta apraksts nedrīkst pārsniegt 1000 rakstu zīmes!",
-            'product_desc.min' => "Produkta apraksts nedrīkst būt īsāks par 10 rakstu zīmēm!",
+        if (!$product) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Produkts nav atrasts!',
+            ], 404);
+        }
+
+        $validation = Validator::make(request()->all(), [
+            'product_title_lv' => 'required|unique:products,product_title_lv,' . $id . '|string|max:50|min:5',
+            'product_title_eng' => 'required|unique:products,product_title_eng,' . $id . '|string|max:50|min:5',
+            'product_title_ru' => 'required|unique:products,product_title_ru,' . $id . '|string|max:50|min:5',
+            'product_desc_lv' => 'required|string|max:1000|min:10',
+            'product_desc_eng' => 'required|string|max:1000|min:10',
+            'product_desc_ru' => 'required|string|max:1000|min:10',
+            'category_id' => 'required',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg'
+        ], [
+            'product_title_lv.required' => "Produkta nosaukums ir obligāts!",
+            'product_title_lv.unique' => "Produkta nosaukums nedrīkst atkārtoties!",
+            'product_title_lv.string' => "Produkta nosaukmam jābūt tekstam!",
+            'product_title_lv.max' => "Produkta nosaukums nedrīkst pārsniegt 50 rakstu zīmes!",
+            'product_title_lv.min' => "Produkta nosaukums nedrīkst būt īsāks par 5 rakstu zīmēm!",
+
+            'product_title_eng.required' => "Produkta nosaukums ir obligāts!",
+            'product_title_eng.unique' => "Produkta nosaukums nedrīkst atkārtoties!",
+            'product_title_eng.string' => "Produkta nosaukmam jābūt tekstam!",
+            'product_title_eng.max' => "Produkta nosaukums nedrīkst pārsniegt 50 rakstu zīmes!",
+            'product_title_eng.min' => "Produkta nosaukums nedrīkst būt īsāks par 5 rakstu zīmēm!",
+
+            'product_title_ru.required' => "Produkta nosaukums ir obligāts!",
+            'product_title_ru.unique' => "Produkta nosaukums nedrīkst atkārtoties!",
+            'product_title_ru.string' => "Produkta nosaukmam jābūt tekstam!",
+            'product_title_ru.max' => "Produkta nosaukums nedrīkst pārsniegt 50 rakstu zīmes!",
+            'product_title_ru.min' => "Produkta nosaukums nedrīkst būt īsāks par 5 rakstu zīmēm!",
+
+            'product_desc_lv.required' => "Produkta apraksts ir obligāts!",
+            'product_desc_lv.string' => "Produkta aprakstam jābūt tekstam!",
+            'product_desc_lv.max' => "Produkta apraksts nedrīkst pārsniegt 1000 rakstu zīmes!",
+            'product_desc_lv.min' => "Produkta apraksts nedrīkst būt īsāks par 10 rakstu zīmēm!",
+
+            'product_desc_eng.required' => "Produkta apraksts ir obligāts!",
+            'product_desc_eng.string' => "Produkta aprakstam jābūt tekstam!",
+            'product_desc_eng.max' => "Produkta apraksts nedrīkst pārsniegt 1000 rakstu zīmes!",
+            'product_desc_eng.min' => "Produkta apraksts nedrīkst būt īsāks par 10 rakstu zīmēm!",
+
+            'product_desc_ru.required' => "Produkta apraksts ir obligāts!",
+            'product_desc_ru.string' => "Produkta aprakstam jābūt tekstam!",
+            'product_desc_ru.max' => "Produkta apraksts nedrīkst pārsniegt 1000 rakstu zīmes!",
+            'product_desc_ru.min' => "Produkta apraksts nedrīkst būt īsāks par 10 rakstu zīmēm!",
+
+            'category_id.required' => 'Kategorija ir obligāta!',
 
             'image.required' => 'Produkta titula bilde ir obligāta!',
             'image.image' => 'Produkta titula bildei ir jābūt bildei!',
-            'image.mimes' => 'Produkta titula bilde tikai var būt JPEG, PNG, JPG!'
+            'image.mimes' => 'Produkta titula bilde tikai var būt JPEG, PNG, JPG!',
+
+            'images.image' => 'Produkta papildus bildēm ir jābut bildēm!',
+            'images.mimes' => 'Produkta papildus bildes var būt JPEG, PNG, JPG!'
         ]);
 
-        if($validation->fails()) {
+
+        if ($validation->fails()) {
             return response()->json([
                 'status' => 422,
                 'message' => "Neizdevās atjaunot produktu!",
@@ -211,51 +250,96 @@ class ProductController extends Controller
             ], 422);
         }
 
-        if(empty(request()->file('image'))) {
-            //Create data
-            Product::where('product_title', $name)->update([
-                'product_title' => request('product_title'),
-                'product_desc' => request('product_desc'),
-            ]);
+        if (request()->hasFile('image')) {
+            // Unlink old main image
+            $oldMainImg = basename($product->main_img);
+            if (Storage::disk('public')->exists('images/' . $oldMainImg)) {
+                Storage::disk('public')->delete('images/' . $oldMainImg);
+            }
 
-            return response()->json([
-                'success_msg' => 'Produkts vieksmīgi atjaunots!',
-                'status' => 201,
-            ], 201);
+            // Upload new main image
+            $file = request()->file('image');
+            $filename = $file->getClientOriginalName();
+            $final_name = date('His') . $filename;
+            $path = $file->storeAs('images', $final_name, 'public');
+            $img_url = asset('storage/' . $path);
+
+            // Update product with new main image URL
+            $product->main_img = $img_url;
         }
-        //Get the image file
-        $file = request()->file('image');
-        //Get the original image name
-        $filename = $file->getClientOriginalName();
-        //Add current time to image to make sure image names never match
-        $final_name = date('His') . $filename;
-        //Get path of image
-        $path = request()->file('image')->storeAs('images', $final_name, 'public');
-        //Get the full path of image to store in db
-        $img_url = asset('storage/' . $path);
 
-        //Create data
-        Product::where('product_title', $name)->update([
-            'product_title' => request('product_title'),
-            'product_desc' => request('product_desc'),
-            'main_img' => $img_url
+        if (request()->hasFile('images')) {
+            // Unlink old gallery images
+            $oldImages = Gallery::where('product_id', $id)->get();
+            foreach ($oldImages as $oldImage) {
+                $oldImgPath = basename($oldImage->img_url);
+                if (Storage::disk('public')->exists('images/' . $oldImgPath)) {
+                    Storage::disk('public')->delete('images/' . $oldImgPath);
+                }
+                $oldImage->delete();
+            }
+
+            // Upload new gallery images
+            foreach (request()->file('images') as $file) {
+                $filename = $file->getClientOriginalName();
+                $final_name = date('His') . $filename;
+                $path = 'images/' . $final_name;
+                Storage::disk('public')->putFileAs('images', $file, $final_name);
+                $img_url = asset('storage/' . $path);
+
+                Gallery::create([
+                    'product_id' => $product->id,
+                    'img_url' => $img_url
+                ]);
+            }
+        }
+
+        // Update product details
+        Product::where('id', $id)->update([
+            'product_title_lv' => request('product_title_lv'),
+            'product_title_eng' => request('product_title_eng'),
+            'product_title_ru' => request('product_title_ru'),
+            'product_desc_lv' => request('product_desc_lv'),
+            'product_desc_eng' => request('product_desc_eng'),
+            'product_desc_ru' => request('product_desc_ru'),
+            'category_id' => request('category_id'),
         ]);
 
         return response()->json([
-            'success_msg' => 'Produkts vieksmīgi atjaunots!',
-            'status' => 201,
-        ], 201);
+            'success_msg' => 'Produkts veiksmīgi atjaunināts!',
+            'status' => 200,
+        ], 200);
     }
 
-    public static function destroy($id)
+    public static function destroy($id): JsonResponse
     {
-        //Find product by id
+        // Find product by id
         $product = Product::find($id);
-        //Make Absolute URL from db into a usable URL
-        $product_url = str_replace(asset('storage/'), 'public', $product->main_img);
-        //Delete image from storage
-        unlink(Storage::path($product_url));
-        //Delete book info from db
+
+        if (!$product) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Produkts nav atrasts!',
+            ], 404);
+        }
+
+        // Unlink main image
+        $mainImgPath = str_replace(asset('storage/'), 'public/', $product->main_img);
+        if (Storage::exists($mainImgPath)) {
+            Storage::delete($mainImgPath);
+        }
+
+        // Unlink gallery images
+        $galleryImages = Gallery::where('product_id', $id)->get();
+        foreach ($galleryImages as $galleryImage) {
+            $galleryImgPath = str_replace(asset('storage/'), 'public/', $galleryImage->img_url);
+            if (Storage::exists($galleryImgPath)) {
+                Storage::delete($galleryImgPath);
+            }
+            $galleryImage->delete(); // Delete gallery record
+        }
+
+        // Delete product info from db
         $product->delete();
 
         return response()->json([
@@ -264,10 +348,23 @@ class ProductController extends Controller
         ], 200);
     }
 
-    function getByName($name)
-    {
-        $data = Product::where('product_title', $name)->first();
 
-        return response()->json($data);
+    function getByName($id)
+    {
+        $product = Product::where('id', $id)->first();
+
+        if (!$product) {
+            return response()->json([
+                'message' => 'Product not found'
+            ], 404);
+        }
+
+        $galleryImages = Gallery::where('product_id', $product->id)->get();
+
+        $galleryUrls = $galleryImages->pluck('img_url');
+
+        $product->gallery = $galleryUrls;
+
+        return response()->json($product);
     }
 }
