@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Tokens;
 use Closure;
 use App\Models\User;
 
@@ -12,10 +13,20 @@ class VerifyUserToken
         // Get the user token from the request
         $userToken = $request->header('Authorization');
 
-        // Find the user by token in the database
-        $user = User::where('token', $userToken)->first();
+        // Find the token in the Token table
+        $token = Tokens::where('token', $userToken)->first();
 
-        // Check if the user with the given token exists
+        // Check if the token exists
+        if (!$token) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Get the user associated with the token
+//        $user = $token->id;
+
+        $user = User::where('token_id', $token->id)->first();
+
+        // Check if the user exists
         if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }

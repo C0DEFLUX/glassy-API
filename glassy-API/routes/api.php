@@ -29,6 +29,8 @@ Route::post('login', [UserController::class, 'login']);
 
 Route::get('register', [UserController::class, 'register']);
 
+Route::get('users', [UserController::class, 'index']);
+
 //Categories
 Route::get('category-data', [CategoryController::class, 'index']);
 
@@ -50,6 +52,8 @@ Route::delete('delete-product/{id}', [ProductController::class, 'destroy']);
 Route::get('product-by-name/{name}', [ProductController::class, 'getByName']);
 
 Route::get('gallery-data', [ProductController::class, 'galleryIndex']);
+
+Route::get('products-by-category/{categoryId}', [ProductController::class, 'getByCategoryId']);
 
 //Marketing
 Route::get('title-image', [MarketingController::class, 'index']);

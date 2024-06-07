@@ -27,7 +27,7 @@ class MarketingController extends Controller
             'image.mimes' => 'Titula bilde tikai var būt JPEG, PNG, JPG!',
         ]);
 
-        if($validation->fails()) {
+        if ($validation->fails()) {
             return response()->json([
                 'status' => 422,
                 'message' => "Neizdevās ieveitot titula bildi!",
@@ -38,29 +38,29 @@ class MarketingController extends Controller
         $title_img = BgImages::first();
 
         if (request()->hasFile('image')) {
-            // Unlink old main image
-            $oldMainImg = basename($title_img->image_url);
-            if (Storage::disk('public')->exists('images/' . $oldMainImg)) {
-                Storage::disk('public')->delete('images/' . $oldMainImg);
+            if ($title_img && !empty($oldMainImg = basename($title_img->image_url))) {
+                if (Storage::disk('public')->exists('images/' . $oldMainImg)) {
+                    Storage::disk('public')->delete('images/' . $oldMainImg);
+                }
             }
 
-            // Upload new main image
             $file = request()->file('image');
             $filename = $file->getClientOriginalName();
             $final_name = date('His') . $filename;
             $path = $file->storeAs('images', $final_name, 'public');
             $img_url = asset('storage/' . $path);
 
-            // Update product with new main image URL
-            $title_img->image_url = $img_url;
+            if ($title_img) {
+                $title_img->image_url = $img_url;
+                $title_img->save();
+            } else {
+                BgImages::create(['image_url' => $img_url]);
+            }
         }
 
         return response()->json([
             'success_msg' => 'Titula veiksmīgi pievienota!',
             'status' => 200,
         ], 200);
-
-
-
     }
 }

@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('tokens', function (Blueprint $table) {
             $table->charset = 'utf8';
             $table->collation = 'utf8_general_ci';
-
             $table->id();
-            $table->string('username')->nullable();
-            $table->string('password')->nullable();
-            $table->integer('token_id')->nullable();
+            $table->text('token')->nullable();
             $table->string('created_at')->nullable();
             $table->string('updated_at')->nullable();
         });
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('tokens');
     }
 };

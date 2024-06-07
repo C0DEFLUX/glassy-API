@@ -2,61 +2,60 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Tokens;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Js;
 use Illuminate\Support\Str;
 use App\Models\User;
 
 
 class UserController extends Controller
 {
-    function login(Request $request) {
+    public static function index () : JsonResponse
+    {
+        $data = User::all();
 
-        //Init data
-        $data = [
-            'user' => $request->input('username'),
-            'pass' => $request->input('password'),
-            'userErr' => '',
-            'passErr' => '',
-        ];
+        return response()->json($data);
+    }
+    public static function login(Request $request) : JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'username' => 'required',
+            'password' => 'required',
+        ], [
+            'username.required' => 'Lūdzu ievadiet lietotājvārdu!',
+            'password.required' => 'Lūdzu ievadiet paroli!'
+        ]);
 
-        //Check if username and password match with db
+        // Check if the validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Neizdevās pieslēgties!',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        // Check if username and password match with the database
         $user = User::where('username', $request->input('username'))->first();
 
-        if(!$user || !Hash::check($request->password, $user->password)) {
 
-            $data['passErr'] = 'Lietotājvārds vai parole ir nepareiza!';
-
-        }
-
-        //Check if user field is empty
-        if(empty($data['user'])) {
-            $data['userErr'] = 'Lūdzu ievadiet lietotājvārdu!';
-        }
-
-        //Check if pass field is empty
-        if(empty($data['pass'])) {
-            $data['passErr'] = 'Lūdzu ievadiet paroli!';
-        }
-
-        //If error check is passed return token json
-        if(empty($data['userErr']) && empty($data['passErr'])) {
-
+        if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
-                'userErr' => '',
-                'passErr' => '',
-                'token' => $user['token'],
-                'status' => 200
-            ]);
-
+                'errors' => [
+                    'password' => ['Nepareiz lietotājvārds vai parole!'],
+                ]
+            ], 422);
         }
 
-        //If error pass failed return error json
+        $token = Tokens::where('id', $user->id)->first();
+
         return response()->json([
-            'userErr' => $data['userErr'],
-            'passErr' => $data['passErr'],
-            'status' => 403
-        ]);
+            'token' => $token['token'],
+            'status' => 200
+        ], 200);
 
     }
 
@@ -70,9 +69,13 @@ class UserController extends Controller
         $data = [
             'username' => 'Admin',
             'password' => '$2y$10$Y4nEXtcAMFQXeDZnIgAs2.sRI.Pu0Z0fVOiTSyc.oXTr8A3QChe6S',
+            'token_id' => 1
+        ];
+        $token = [
             'token' => 'j7hYinIDjvT0EcnAnSelibk5n1WLvyQhxIWhgXffb3sVUxDyVbTSuUDVsPB4'
         ];
 
+        Tokens::create($token);
         User::create($data);
     }
 }

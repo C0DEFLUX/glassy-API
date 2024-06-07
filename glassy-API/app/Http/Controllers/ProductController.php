@@ -241,7 +241,6 @@ class ProductController extends Controller
             'images.mimes' => 'Produkta papildus bildes var būt JPEG, PNG, JPG!'
         ]);
 
-
         if ($validation->fails()) {
             return response()->json([
                 'status' => 422,
@@ -266,7 +265,9 @@ class ProductController extends Controller
 
             // Update product with new main image URL
             $product->main_img = $img_url;
+            $product->save();
         }
+
 
         if (request()->hasFile('images')) {
             // Unlink old gallery images
@@ -295,7 +296,7 @@ class ProductController extends Controller
         }
 
         // Update product details
-        Product::where('id', $id)->update([
+        $product->update([
             'product_title_lv' => request('product_title_lv'),
             'product_title_eng' => request('product_title_eng'),
             'product_title_ru' => request('product_title_ru'),
@@ -311,15 +312,90 @@ class ProductController extends Controller
         ], 200);
     }
 
-    public static function destroy($id): JsonResponse
+
+    public static function getByName($name) : JsonResponse
     {
-        // Find product by id
-        $product = Product::find($id);
+        $product = DB::table('products')
+            ->join('categories', 'products.category_id', '=', 'categories.id')
+            ->where('products.product_title_lv', $name)
+            ->select('products.*',
+                'categories.category_name_lv as category_lv',
+                'categories.category_name_eng as category_eng',
+                'categories.category_name_ru as category_ru'
+            )
+            ->first();
 
         if (!$product) {
             return response()->json([
-                'status' => 404,
                 'message' => 'Produkts nav atrasts!',
+                'status' => 404
+            ], 404);
+        }
+
+        $product->category = [
+            'lv' => $product->category_lv,
+            'eng' => $product->category_eng,
+            'ru' => $product->category_ru
+        ];
+        unset($product->category_lv);
+        unset($product->category_eng);
+        unset($product->category_ru);
+
+        $galleryImages = DB::table('galleries')
+            ->where('product_id', $product->id)
+            ->pluck('img_url');
+        $product->gallery = $galleryImages;
+
+        return response()->json($product);
+    }
+
+    public static function getByCategoryId($categoryId) : JsonResponse
+    {
+        $products = DB::table('products')
+            ->join('categories', 'products.category_id', '=', 'categories.id')
+            ->where('products.category_id', $categoryId)
+            ->select('products.*',
+                'categories.category_name_lv as category_lv',
+                'categories.category_name_eng as category_eng',
+                'categories.category_name_ru as category_ru'
+            )
+            ->get();
+
+        if ($products->isEmpty()) {
+            return response()->json([
+                'message' => 'Produkt nevarēja atrast pēc šis kategorijas!',
+                'status' => 404
+            ], 404);
+        }
+
+        $products = $products->map(function ($product) {
+            $product->category = [
+                'lv' => $product->category_lv,
+                'eng' => $product->category_eng,
+                'ru' => $product->category_ru
+            ];
+            unset($product->category_lv);
+            unset($product->category_eng);
+            unset($product->category_ru);
+
+            $galleryImages = DB::table('galleries')
+                ->where('product_id', $product->id)
+                ->pluck('img_url');
+            $product->gallery = $galleryImages;
+
+            return $product;
+        });
+
+        return response()->json($products);
+    }
+
+    public static function destroy($id): JsonResponse
+    {
+        $product = Product::find($id);
+        if (!$product) {
+            return response()->json([
+                'message' => 'Produkts nav atrasts!',
+                'status' => 404
             ], 404);
         }
 
@@ -328,7 +404,6 @@ class ProductController extends Controller
         if (Storage::exists($mainImgPath)) {
             Storage::delete($mainImgPath);
         }
-
         // Unlink gallery images
         $galleryImages = Gallery::where('product_id', $id)->get();
         foreach ($galleryImages as $galleryImage) {
@@ -338,7 +413,6 @@ class ProductController extends Controller
             }
             $galleryImage->delete(); // Delete gallery record
         }
-
         // Delete product info from db
         $product->delete();
 
@@ -349,22 +423,4 @@ class ProductController extends Controller
     }
 
 
-    function getByName($id)
-    {
-        $product = Product::where('id', $id)->first();
-
-        if (!$product) {
-            return response()->json([
-                'message' => 'Product not found'
-            ], 404);
-        }
-
-        $galleryImages = Gallery::where('product_id', $product->id)->get();
-
-        $galleryUrls = $galleryImages->pluck('img_url');
-
-        $product->gallery = $galleryUrls;
-
-        return response()->json($product);
-    }
 }
