@@ -34,20 +34,20 @@ Route::get('users', [UserController::class, 'index']);
 //Categories
 Route::get('category-data', [CategoryController::class, 'index']);
 
-Route::post('add-category', [CategoryController::class, 'create']);
+Route::middleware('VerifyUserToken')->post('add-category', [CategoryController::class, 'create']);
 
-Route::post('edit-category/{id}', [CategoryController::class, 'update']);
+Route::middleware('VerifyUserToken')->post('edit-category/{id}', [CategoryController::class, 'update']);
 
-Route::delete('delete-category/{id}', [CategoryController::class, 'destroy']);
+Route::middleware('VerifyUserToken')->delete('delete-category/{id}', [CategoryController::class, 'destroy']);
 
 //Products
-Route::post('add-product', [ProductController::class, 'create']);
+Route::middleware('VerifyUserToken')->post('add-product', [ProductController::class, 'create']);
 
-Route::post('edit-product/{id}', [ProductController::class, 'update']);
+Route::middleware('VerifyUserToken')->post('edit-product/{id}', [ProductController::class, 'update']);
 
 Route::get('product-data', [ProductController::class, 'index']);
 
-Route::delete('delete-product/{id}', [ProductController::class, 'destroy']);
+Route::middleware('VerifyUserToken')->delete('delete-product/{id}', [ProductController::class, 'destroy']);
 
 Route::get('product-by-name/{name}', [ProductController::class, 'getByName']);
 
@@ -58,4 +58,4 @@ Route::get('products-by-category/{categoryId}', [ProductController::class, 'getB
 //Marketing
 Route::get('title-image', [MarketingController::class, 'index']);
 
-Route::post('add-title-image', [MarketingController::class, 'create']);
+Route::middleware('VerifyUserToken')->post('add-title-image', [MarketingController::class, 'create']);
