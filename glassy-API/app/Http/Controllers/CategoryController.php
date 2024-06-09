@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Gallery;
+use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
@@ -112,18 +115,49 @@ class CategoryController extends Controller
         return response()->json([
             'status' => 201,
             'success_msg' => 'Kategorija atjaunota veiksmīgi!',
-            'data' => $categories
         ], 201);
     }
 
     public static function destroy($id): JsonResponse
     {
+        // Find the category
         $category = Category::find($id);
 
+        if (!$category) {
+            return response()->json([
+                'message' => 'Kategorija nav atrasta!',
+                'status' => 404
+            ], 404);
+        }
+
+        // Find all products under category
+        $products = Product::where('category_id', $id)->get();
+
+        // Delete each product
+        foreach ($products as $product) {
+            // Unlink main image
+            $mainImgPath = str_replace(asset('storage/'), 'public/', $product->main_img);
+            if (Storage::exists($mainImgPath)) {
+                Storage::delete($mainImgPath);
+            }
+            // Unlink gallery images
+            $galleryImages = Gallery::where('product_id', $product->id)->get();
+            foreach ($galleryImages as $galleryImage) {
+                $galleryImgPath = str_replace(asset('storage/'), 'public/', $galleryImage->img_url);
+                if (Storage::exists($galleryImgPath)) {
+                    Storage::delete($galleryImgPath);
+                }
+                $galleryImage->delete();
+            }
+            // Delete product info from db
+            $product->delete();
+        }
+
+        // Delete the category
         $category->delete();
 
         return response()->json([
-            'message' => 'Kategorija noņemnta veiksmīgi!',
+            'message' => 'Kategorija un saistītie produkti dzēsti veiksmīgi!',
             'status' => 200,
         ], 200);
     }

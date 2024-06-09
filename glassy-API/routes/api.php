@@ -49,7 +49,7 @@ Route::get('product-data', [ProductController::class, 'index']);
 
 Route::middleware('VerifyUserToken')->delete('delete-product/{id}', [ProductController::class, 'destroy']);
 
-Route::get('product-by-name/{name}', [ProductController::class, 'getByName']);
+Route::get('product-by-id/{id}', [ProductController::class, 'getById']);
 
 Route::get('gallery-data', [ProductController::class, 'galleryIndex']);
 

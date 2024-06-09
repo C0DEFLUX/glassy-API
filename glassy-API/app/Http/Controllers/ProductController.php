@@ -313,11 +313,11 @@ class ProductController extends Controller
     }
 
 
-    public static function getByName($name) : JsonResponse
+    public static function getById($id) : JsonResponse
     {
         $product = DB::table('products')
             ->join('categories', 'products.category_id', '=', 'categories.id')
-            ->where('products.product_title_lv', $name)
+            ->where('products.id', $id)
             ->select('products.*',
                 'categories.category_name_lv as category_lv',
                 'categories.category_name_eng as category_eng',
