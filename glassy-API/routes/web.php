@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,6 +17,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('/linkstorage', function () {
+    Artisan::call('storage:link');
+    Artisan::call('migrate', ['--force' => true]);
+
 });
 
 //Route::any('/register', [UserController::class, 'register']);

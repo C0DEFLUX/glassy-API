@@ -31,6 +31,8 @@ Route::get('register', [UserController::class, 'register']);
 
 Route::get('users', [UserController::class, 'index']);
 
+Route::get('test-user', [UserController::class, 'testUser']);
+
 //Categories
 Route::get('category-data', [CategoryController::class, 'index']);
 

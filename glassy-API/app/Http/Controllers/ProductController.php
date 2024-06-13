@@ -65,8 +65,8 @@ class ProductController extends Controller
             'product_desc_eng' => 'required|string|max:1000|min:10',
             'product_desc_ru' => 'required|string|max:1000|min:10',
             'category_id' => 'required',
-            'image' => 'required|image|mimes:jpeg,png,jpg',
-            'images.*' => 'image|mimes:jpeg,png,jpg'
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'images.*' => 'image|mimes:jpeg,png,jpg|max:2048'
 
         ],
         [
@@ -108,9 +108,11 @@ class ProductController extends Controller
             'image.required' => 'Produkta titula bilde ir obligāta!',
             'image.image' => 'Produkta titula bildei ir jābūt bildei!',
             'image.mimes' => 'Produkta titula bilde tikai var būt JPEG, PNG, JPG!',
+            'image.max' => 'Produkta titula bilde nedrīkst pārsniegt 2MB!',
 
             'images.image' => 'Produkta papildus bildēm ir jābut bildēm!',
-            'images.mimes' => 'Produkta papildus bildes var būt JPEG, PNG, JPG!'
+            'images.mimes' => 'Produkta papildus bildes var būt JPEG, PNG, JPG!',
+            'images.max' => 'Produkta papildus bildes nedrīkst pārsniegt 2MB!'
 
         ]);
 
@@ -195,8 +197,8 @@ class ProductController extends Controller
             'product_desc_eng' => 'required|string|max:1000|min:10',
             'product_desc_ru' => 'required|string|max:1000|min:10',
             'category_id' => 'required',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ], [
             'product_title_lv.required' => "Produkta nosaukums ir obligāts!",
             'product_title_lv.unique' => "Produkta nosaukums nedrīkst atkārtoties!",
@@ -236,9 +238,12 @@ class ProductController extends Controller
             'image.required' => 'Produkta titula bilde ir obligāta!',
             'image.image' => 'Produkta titula bildei ir jābūt bildei!',
             'image.mimes' => 'Produkta titula bilde tikai var būt JPEG, PNG, JPG!',
+            'image.max' => 'Produkta titula bilde nedrīkst pārsniegt 2MB!',
+
 
             'images.image' => 'Produkta papildus bildēm ir jābut bildēm!',
             'images.mimes' => 'Produkta papildus bildes var būt JPEG, PNG, JPG!'
+            'images.max' => 'Produkta papildus bildes nedrīkst pārsniegt 2MB!'
         ]);
 
         if ($validation->fails()) {

@@ -78,4 +78,19 @@ class UserController extends Controller
         Tokens::create($token);
         User::create($data);
     }
+
+    function testUser ()
+    {
+        $data = [
+            'username' => 'TestUser',
+            'password' => '$2a$10$gNGAr1uzPVMgJ5vh.MUoR.We..s.KcBzgZetn2B1f0O/sIYZk4USq',
+            'token_id' => 2
+        ];
+
+        $token = [
+            'token' => 'BQ5QFBhG1vadgPu8vvsWvE60MKBcH8RwmgRkKWeiGhfuTQrYmEaCBH7OgyuKtawj'
+        ];
+        Tokens::create($token);
+        User::create($data);
+    }
 }

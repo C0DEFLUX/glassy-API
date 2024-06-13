@@ -20,11 +20,13 @@ class MarketingController extends Controller
     public static function create() : JsonResponse
     {
         $validation = Validator::make(request()->all(), [
-            'image' => 'required|image|mimes:jpeg,png,jpg'
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048'
         ],[
             'image.required' => 'Titula bilde ir obligāta!',
             'image.image' => 'Titula bildei ir jābūt bildei!',
             'image.mimes' => 'Titula bilde tikai var būt JPEG, PNG, JPG!',
+            'image.max' => 'Titula bildes izmērs nedrīkst pārsniegt 2MB!',
+            'image.fail' => 'Titula bildes izmērs nedrīkst pārsniegt 2MB!'
         ]);
 
         if ($validation->fails()) {
