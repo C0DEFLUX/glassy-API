@@ -115,6 +115,7 @@ class CategoryController extends Controller
         return response()->json([
             'status' => 201,
             'success_msg' => 'Kategorija atjaunota veiksmīgi!',
+            'data' => $categories
         ], 201);
     }
 
